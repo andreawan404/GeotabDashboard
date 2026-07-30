@@ -1,6 +1,7 @@
 const nextConfig = {
   reactStrictMode: true,
   output: 'export',
+  assetPrefix: 'https://geotab-dashboard-kappa.vercel.app',
   async headers() {
     return [
       {
