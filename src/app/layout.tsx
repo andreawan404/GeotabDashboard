@@ -18,7 +18,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
           dangerouslySetInnerHTML={{
             __html: `
               (() => {
-                const addinName = "geotabVehicleDashboard";
+                const addinName = "testing_dashboard-geotab-dashboard-kappa_vercel_app";
                 window.geotab = window.geotab || {};
                 window.geotab.addin = window.geotab.addin || {};
 
