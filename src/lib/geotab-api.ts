@@ -9,10 +9,31 @@ export interface GeotabDevice {
   groups?: Array<{ id: string; name?: string }>;
 }
 
-export async function fetchDevices(): Promise<GeotabDevice[]> {
+async function waitForApi(timeout = 7000): Promise<void> {
   if (typeof window === "undefined") {
     throw new Error("Geotab API is only available in the browser.");
   }
+
+  if ((window as any).geotab?.api) return;
+
+  return new Promise<void>((resolve, reject) => {
+    const onInit = () => {
+      window.removeEventListener("geotab-initialize", onInit);
+      resolve();
+    };
+
+    window.addEventListener("geotab-initialize", onInit);
+
+    const t = setTimeout(() => {
+      window.removeEventListener("geotab-initialize", onInit);
+      clearTimeout(t);
+      reject(new Error("MyGeotab API client not available (timeout)"));
+    }, timeout);
+  });
+}
+
+export async function fetchDevices(): Promise<GeotabDevice[]> {
+  await waitForApi(7000);
 
   const geotab = (window as any).geotab;
   if (!geotab || !geotab.api?.call) {
