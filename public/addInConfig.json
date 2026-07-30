@@ -1,0 +1,16 @@
+{
+  "name": "Vehicle Dashboard",
+  "supportEmail": "support@example.com",
+  "version": "1.0",
+  "items": [
+    {
+      "url": "https://your-host.example.com/vehicle-dashboard/index.html",
+      "path": "ActivityLink",
+      "menuName": {
+        "en": "Vehicle Dashboard"
+      },
+      "svgIcon": "https://your-host.example.com/vehicle-dashboard/icon.svg"
+    }
+  ],
+  "isSigned": false
+}
