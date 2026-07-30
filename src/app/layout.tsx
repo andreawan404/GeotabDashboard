@@ -22,6 +22,13 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
                 window.geotab = window.geotab || {};
                 window.geotab.addin = window.geotab.addin || {};
 
+                const isInIframe = window.self !== window.top;
+                console.debug("AddinBootstrap: iframe check", {
+                  isInIframe,
+                  referrer: document.referrer,
+                  location: window.location.href
+                });
+
                 if (!window.geotab.addin[addinName]) {
                   window.geotab.addin[addinName] = {
                     initialize(api, state) {
