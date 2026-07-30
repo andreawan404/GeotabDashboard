@@ -18,7 +18,11 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
           dangerouslySetInnerHTML={{
             __html: `
               (() => {
-                const addinName = "testing_dashboard-geotab-dashboard-kappa_vercel_app";
+                const configuredAddinName = "testing_dashboard-geotab-dashboard-kappa_vercel_app";
+                const hashAddinName = window.location.hash.startsWith("#addin-")
+                  ? window.location.hash.slice(7)
+                  : null;
+                const addinNames = [configuredAddinName, hashAddinName].filter(Boolean);
                 window.geotab = window.geotab || {};
                 window.geotab.addin = window.geotab.addin || {};
 
@@ -29,8 +33,9 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
                   location: window.location.href
                 });
 
-                if (!window.geotab.addin[addinName]) {
-                  window.geotab.addin[addinName] = {
+                addinNames.forEach((name) => {
+                  if (!window.geotab.addin[name]) {
+                    window.geotab.addin[name] = {
                     initialize(api, state) {
                       window.geotab.api = api;
                       window.dispatchEvent(new Event("geotab-initialize"));
@@ -42,6 +47,13 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
                     blur() {
                       console.debug("AddinBootstrap: blur");
                     }
+                    };
+                    console.debug("AddinBootstrap: registered", name);
+                  } else {
+                    console.debug("AddinBootstrap: already registered", name);
+                  }
+                });
+                console.debug("AddinBootstrap: registered names", addinNames);
                   };
                   console.debug("AddinBootstrap: registered", addinName);
                 } else {
