@@ -9,24 +9,44 @@ export interface GeotabDevice {
   groups?: Array<{ id: string; name?: string }>;
 }
 
-async function waitForApi(timeout = 7000): Promise<void> {
+async function waitForApi(timeout = 30000): Promise<void> {
   if (typeof window === "undefined") {
     throw new Error("Geotab API is only available in the browser.");
   }
 
   if ((window as any).geotab?.api) return;
 
+  // Wait either for the initialize event or for the api object to appear via polling
   return new Promise<void>((resolve, reject) => {
+    let resolved = false;
+
     const onInit = () => {
+      if (resolved) return;
+      resolved = true;
       window.removeEventListener("geotab-initialize", onInit);
+      clearInterval(poll);
+      clearTimeout(timer);
       resolve();
     };
 
     window.addEventListener("geotab-initialize", onInit);
 
-    const t = setTimeout(() => {
+    const poll = setInterval(() => {
+      if ((window as any).geotab?.api) {
+        if (resolved) return;
+        resolved = true;
+        window.removeEventListener("geotab-initialize", onInit);
+        clearInterval(poll);
+        clearTimeout(timer);
+        resolve();
+      }
+    }, 500);
+
+    const timer = setTimeout(() => {
+      if (resolved) return;
+      resolved = true;
       window.removeEventListener("geotab-initialize", onInit);
-      clearTimeout(t);
+      clearInterval(poll);
       reject(new Error("MyGeotab API client not available (timeout)"));
     }, timeout);
   });
